@@ -1,8 +1,8 @@
 Votifier-mk2
 ============
 A Minecraft Plugin to replace Votifier, due to the very backwards implementation of RSA
-
-
+  
+  
 What is Votifier-mk2
 -----------------
 Votifier-mk2 is a replacement for the "Votifer" plugin for Minecraft.  
@@ -29,7 +29,13 @@ You no longer have to regenerate your keys, or any keys, or update any websites.
 _**This is how RSA keys are meant to be used**_  
   
   
-
+**Basically**
+in Votifier if the website gets comrpimised, you have to start over and give every website a new key
+in Votifier-mk2 if the website gets comprimised, you just remove that websites bad key
+  
+  
+  
+  
 How does RSA work?
 ------------------
 RSA works by generating two keys, The **Private** key, and the **Public** key.  
@@ -41,18 +47,20 @@ The keys are used to "Scramble" messages,
 The private key scrambles it in a way that only the public key can read.  
 If the private key sends out a message, anyone can read it.  
   
-  
+   
 The public key scrambles it in a way that only the private key can read.  
 If the public key sends out a message, only the private key can read it.  
-
-
-
+  
+  
+  
 How is this relevant? 
 -------------------
-In Votifier-mk2, all messages are sent from the website using the private key, anyone can read them.  
+In **Votifier-mk2**   
+All messages are sent from the website using the private key, anyone can read them.  
 Nobody can pretend to be that website.  
 _**This, is secure**_  
-
-In Votifier, all messages are sent from the website using the public key, nobody but the server can read them.  
+  
+In **Votifier**  
+All messages are sent from the website using the public key, nobody but the server can read them.  
 Anyone with the public key can send them to the server.  
 _**This, is not secure**_  
