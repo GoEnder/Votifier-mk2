@@ -64,3 +64,24 @@ In **Votifier**
 All messages are sent from the website using the public key, nobody but the server can read them.  
 Anyone with the public key can send them to the server.  
 _**This, is not secure**_  
+
+
+
+
+Central Key Repository?
+-------------------
+Votifier-mk2 will have a central location where we track and store all Server List Websites possible.
+
+**For the Website Owner**   
+We will only track the keys for the websites who request tracking, but it is highly reccomended.  
+This requires sending a request to us with your key every time you change it.  
+This allows server owners to always have the right key.  
+This also allows you to be alerted when you have a possible server comprimization  
+
+**For the Server Owner**  
+Our "Central Key Repository" will be an _Opt-In_ feature that allows you to:
+ * Add allowed keys on the fly
+ * Remove allowed keys on the fly
+ * Report bad keys
+ * Automatically be alerted if you have a bad key
+ * Automatically have bad keys updated to good ones
