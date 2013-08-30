@@ -29,7 +29,7 @@ You no longer have to regenerate your keys, or any keys, or update any websites.
 _**This is how RSA keys are meant to be used**_  
   
   
-**Basically**
+**Basically**  
 in Votifier if the website gets comrpimised, you have to start over and give every website a new key
 in Votifier-mk2 if the website gets comprimised, you just remove that websites bad key
   
@@ -70,18 +70,6 @@ _**This, is not secure**_
 
 Central Key Repository?
 -------------------
-Votifier-mk2 will have a central location where we track and store all Server List Websites possible.
-
-**For the Website Owner**   
-We will only track the keys for the websites who request tracking, but it is highly reccomended.  
-This requires sending a request to us with your key every time you change it.  
-This allows server owners to always have the right key.  
-This also allows you to be alerted when you have a possible server comprimization  
-
-**For the Server Owner**  
-Our "Central Key Repository" will be an _Opt-In_ feature that allows you to:
- * Add allowed keys on the fly
- * Remove allowed keys on the fly
- * Report bad keys
- * Automatically be alerted if you have a bad key
- * Automatically have bad keys updated to good ones
+Votifier-mk2 will have a "Central Key Repository" with tons of features for both parties  
+The Central Key Repository is used to keep security to a maximum without providing extra security holes  
+To read more on the Central Key Repository, check out the [Web-Examples Readme](https://github.com/GoEnder/Votifier-mk2/tree/master/web-examples#votifier-mk2-central-repository)
