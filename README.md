@@ -30,8 +30,8 @@ _**This is how RSA keys are meant to be used**_
   
   
 **Basically**  
-in Votifier if the website gets comrpimised, you have to start over and give every website a new key
-in Votifier-mk2 if the website gets comprimised, you just remove that websites bad key
+in Votifier if the website gets comrpimised, you have to start over and give every website a new key  
+in Votifier-mk2 if the website gets comprimised, you just remove that websites bad key  
   
   
   
