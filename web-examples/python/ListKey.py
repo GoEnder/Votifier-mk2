@@ -1,4 +1,11 @@
 import simplejson as json
+import urllib2
+import urllib
+from Crypto.PublicKey import RSA 
+from Crypto.Signature import PKCS1_v1_5 
+from Crypto.Cipher import PKCS1_OAEP 
+from Crypto.Hash import SHA256 
+import base64
 
 class ListKey(object):
   """
@@ -15,18 +22,72 @@ class ListKey(object):
     # Configuration
 
     # Important Variable to be set correctly 
-    # This must be your domain name without a leading http:// or trailing slashes
-    self.domain = ''
+    self.domain = 'Meow.org' # This must be your domain name without a leading http:// or trailing slashes
+    self.detail = '' # This is a quick, one line description of your Server List website
 
     # Optional Variables below
     # These are best left as-is
     self.keyname = 'servlist'
 
-  def composeRequest(self):
-    pass
+  def encryptAndSign(self, private, message):
+    privkey = RSA.importKey(private) 
+    rsakey = PKCS1_OAEP.new(privkey) 
+    encrypted = rsakey.encrypt(message) 
+    enc_message = encrypted.encode('base64')
+    signer = PKCS1_v1_5.new(privkey) 
+    digest = SHA256.new(base64.b64decode(enc_message)) 
+    sign = signer.sign(digest) 
+    return base64.b64encode(sign)
+
+  def decryptMessage(self, private, message):
+    rsakey = RSA.importKey(private) 
+    rsakey = PKCS1_OAEP.new(rsakey) 
+    decrypted = rsakey.decrypt(base64.b64decode(message)) 
+    return decrypted
+
+  def loadKeys(self):
+    priv = open('id_%s' % self.keyname, 'r')
+    priv = priv.read()
+    priv = RSA.importKey(priv)
+    ssh_rsa = '00000007' + base64.b16encode('ssh-rsa')                                                                                                                                                       
+    exponent = '%x' % (priv.e, )
+    if len(exponent) % 2:
+        exponent = '0' + exponent
+    ssh_rsa += '%08x' % (len(exponent) / 2, )
+    ssh_rsa += exponent
+    modulus = '%x' % (priv.n, )
+    if len(modulus) % 2:
+        modulus = '0' + modulus
+    if modulus[0] in '89abcdef':
+        modulus = '00' + modulus
+    ssh_rsa += '%08x' % (len(modulus) / 2, )
+    ssh_rsa += modulus
+    self.id_pub = 'ssh-rsa %s %s' % (base64.b64encode(base64.b16decode(ssh_rsa.upper())), self.domain)
+    self.id_priv = priv.exportKey()
+
+  def sendRequest(self):
+    payload = json.dumps(dict(list_detail=self.detail, list_domain=self.domain, list_public=self.id_pub))
+    url = 'http://127.0.0.1:8834/api/list.json'
+    try:
+      request = urllib2.Request(url)
+      request = urllib2.urlopen(request)
+      request.read()
+    except Exception as e:
+      print """
+      Unable to reach Central Key Repository
+      %s
+      """ % e
+      return False
+    headers = {"Content-Type":"application/json"}
+    request = urllib2.Request(url, payload, headers)
+    self.reply = urllib2.urlopen(request)
 
   def getSecret(self):
-    pass
+    reply = json.loads(self.reply.read())
+    message = reply['message']
+    token = reply['token']
+    url = reply['url']
+    print self.decryptMessage(self.id_priv, message)
 
   def sendSecret(self):
     pass
@@ -43,3 +104,9 @@ class ListKey(object):
       Bad: http://domain.com/
       """
       return
+    self.loadKeys()
+    if not self.sendRequest() == False:
+      self.getSecret()
+
+
+ListKey().start()
