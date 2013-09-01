@@ -1,11 +1,14 @@
 import simplejson as json
 import urllib2
 import urllib
+import socket
 from Crypto.PublicKey import RSA 
 from Crypto.Signature import PKCS1_v1_5 
 from Crypto.Cipher import PKCS1_OAEP 
 from Crypto.Hash import SHA256 
+from multiprocessing import Process
 import base64
+import time
 
 class ListKey(object):
   """
@@ -22,7 +25,7 @@ class ListKey(object):
     # Configuration
 
     # Important Variable to be set correctly 
-    self.domain = 'Meow.org' # This must be your domain name without a leading http:// or trailing slashes
+    self.domain = 'localhost.com' # This must be your domain name without a leading http:// or trailing slashes
     self.detail = '' # This is a quick, one line description of your Server List website
 
     # Optional Variables below
@@ -30,12 +33,10 @@ class ListKey(object):
     self.keyname = 'servlist'
 
   def encryptAndSign(self, private, message):
-    privkey = RSA.importKey(private) 
-    rsakey = PKCS1_OAEP.new(privkey) 
-    encrypted = rsakey.encrypt(message) 
-    enc_message = encrypted.encode('base64')
-    signer = PKCS1_v1_5.new(privkey) 
-    digest = SHA256.new(base64.b64decode(enc_message)) 
+    rsakey = RSA.importKey(private) 
+    signer = PKCS1_v1_5.new(rsakey) 
+    digest = SHA256.new() 
+    digest.update(message) 
     sign = signer.sign(digest) 
     return base64.b64encode(sign)
 
@@ -44,6 +45,36 @@ class ListKey(object):
     rsakey = PKCS1_OAEP.new(rsakey) 
     decrypted = rsakey.decrypt(base64.b64decode(message)) 
     return decrypted
+
+  def listenForToken(self):
+    try:
+      try:
+        thread = Process(target=self.listenTimeout)
+        thread.start()
+      except Exception, e:
+        print e
+      s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+      s.bind(('', 55655))
+      s.listen(1)
+      conn, addr = s.accept()
+      while True:
+        data = conn.recv(2048)
+        if (data): break
+      conn.close()
+      return data
+    except:
+      pass
+
+  def listenTimeout(self):
+    try:
+      time.sleep(8)
+      s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+      s.connect(('localhost', 55655))
+      s.sendall('  ')
+      s.close()
+      return
+    except:
+      pass
 
   def loadKeys(self):
     priv = open('id_%s' % self.keyname, 'r')
@@ -78,22 +109,55 @@ class ListKey(object):
       %s
       """ % e
       return False
-    headers = {"Content-Type":"application/json"}
-    request = urllib2.Request(url, payload, headers)
-    self.reply = urllib2.urlopen(request)
+    self.headers = {"Content-Type":"application/json"}
+    request = urllib2.Request(url, payload, self.headers)
+    try:
+      self.webreply = urllib2.urlopen(request, timeout=2).read()
+    except:
+      return False
+    self.reply = self.listenForToken()
+    if len(self.reply) < 40:
+      return False
+    return True
 
   def getSecret(self):
-    reply = json.loads(self.reply.read())
-    message = reply['message']
-    token = reply['token']
-    url = reply['url']
-    print self.decryptMessage(self.id_priv, message)
+    webreply = json.loads(self.webreply)
+    reply = json.loads(self.reply)
+    try:
+      if not (webreply['result']):
+        print """
+        Rejected by the Central Key Repository
+        %s
+        """ % webreply['err']
+        return False
+    except:
+      pass
+    self.message = reply['message']
+    self.url = reply['url']
+    self.token = reply['token']
+    self.secret = self.decryptMessage(self.id_priv, self.message)
+    return True
 
   def sendSecret(self):
-    pass
+    secret = self.secret
+    secret = self.encryptAndSign(self.id_priv, secret)
+    payload = json.dumps(dict(token=self.token,message=secret))
+    request = urllib2.Request(self.url, payload, self.headers)
+    self.reply = urllib2.urlopen(request)
 
   def getResult(self):
-    pass
+    reply = json.loads(self.reply.read())
+    if (reply['result']) == 'Confirmed':
+      print """
+      Successfully Listed at the Central Key Repository
+      """ 
+      return True
+    else:
+      print """
+      Rejected by the Central Key Repository
+      %s
+      """ % reply['err']
+      return False
 
   def start(self):
     domain = self.domain
@@ -105,8 +169,14 @@ class ListKey(object):
       """
       return
     self.loadKeys()
-    if not self.sendRequest() == False:
-      self.getSecret()
+    result = self.sendRequest()
+    if not (result):
+      return
+    result = self.getSecret()
+    if not (result):
+      return
+    self.sendSecret()
+    self.getResult()
 
 
 ListKey().start()

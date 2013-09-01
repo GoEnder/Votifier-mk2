@@ -14,7 +14,7 @@ class GenerateKey(object):
 
     # Important Variable to be set correctly 
     # This must be your domain name without a leading http:// or trailing slashes
-    self.domain = ''
+    self.domain = 'localhost.com'
 
     # Optional Variables below
     # These are best left as-is
