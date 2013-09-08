@@ -17,12 +17,13 @@ To send a vote, You must create a Json Serialized object with the following pera
 | address     | Voters IP       | String    | IP Address of the voter          | '192.168.0.1'  |
 | timestamp   | Unix Timestamp  | Int/Float | Seconds since Epoch              | 1378620756     |
 | uuid        | Random data     | String    | A different UUID each time       |                |
-  
+
 You must then sign the vote using the RSA Private key and the Sha256 algorytm  
 Finally, You append the signature to the end of the json object with a `\xa7` delimiter  
 
 `Vote` + `'\xa7'` + `signature`
   
+_Note: Extra peramiters are just ignored with no error, plugins **can** hook into the extra data_
 
 
 Votifier-mk2 Central Repository  
