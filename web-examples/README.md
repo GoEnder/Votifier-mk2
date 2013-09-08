@@ -10,7 +10,7 @@ How to send a vote
 To send a vote, You must create a Json Serialized object with the following peramiters  
 
 | Name        | Value           | Format    | Description                      |
-| ----------- |:---------------:| ---------:| --------------------------------:|
+|:----------- |:---------------:|:---------:|:-------------------------------- |
 | Type        | "VOTE"          | String    | Literally "VOTE"                 |
 | serviceName | Your Domain     | String    | Domain name matching your pubkey |
 | username    | Voters Username | String    |  Username of the voter           |
@@ -19,8 +19,9 @@ To send a vote, You must create a Json Serialized object with the following pera
 | uuid        | Random data     | String    |  A Random Non-Conflicting UUID   |
   
 You must then sign the vote using the RSA Private key and the Sha256 algorytm  
-Finally, You append the signature to the end of the json object with a '\xa7' delimiter  
-Vote + '\xa7' + signature
+Finally, You append the signature to the end of the json object with a `\xa7` delimiter  
+
+`Vote` + `'\xa7'` + `signature`
   
 
 

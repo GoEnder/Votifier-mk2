@@ -7,6 +7,7 @@ This file is all you need to send a vote to a server.
   
 The file `verifyVote.php` is provided as a example of how Votifier-mk2 will read votes  
 and can be used to check if your own signature program is working properly  
+**It is not needed to send votes**  
 
 
 Libraries
