@@ -3,9 +3,28 @@ Votifier-mk2 Website Examples
 Tips and examples on how to impliment Votifier-mk2 on your website
   
   
+
+
+How to send a vote
+-------------
+To send a vote, You must create a Json Serialized object with the following peramiters  
+
+| Name        | Value           | Format    | Description                      |
+| ----------- |:---------------:| ---------:| --------------------------------:|
+| Type        | "VOTE"          | String    | Literally "VOTE"                 |
+| serviceName | Your Domain     | String    | Domain name matching your pubkey |
+| username    | Voters Username | String    |  Username of the voter           |
+| address     | Voters IP       | String    |  IP Address of the voter         |
+| timestamp   | Unix Timestamp  | Int/Float |  Seconds since Epoch             |
+| uuid        | Random data     | String    |  A Random Non-Conflicting UUID   |
   
+You must then sign the vote using the RSA Private key and the Sha256 algorytm  
+Finally, You append the signature to the end of the json object with a '\xa7' delimiter  
+Vote + '\xa7' + signature
   
-Votifier-mk2 Central Repository
+
+
+Votifier-mk2 Central Repository  
 -------------
 Votifier-mk2 will have a "Central Repository" that helps keep security to a maximum for everyone.  
 Because of how the Repository works, it will require manually enabling before use.  
@@ -31,8 +50,6 @@ Why you should use it:
  * Automatic updates for keys if they are out of date or comprimized  
  * Easy, or Automatic Generation of Config Files  
   
-  
 
-  
 **What is Comprimization**  
 Comprimization is when a Server List website's Private Key is comprimized (made public or abused)  
