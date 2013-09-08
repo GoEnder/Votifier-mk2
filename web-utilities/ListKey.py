@@ -25,7 +25,7 @@ class ListKey(object):
     # Configuration
 
     # Important Variable to be set correctly 
-    self.domain = 'localhost.com' # This must be your domain name without a leading http:// or trailing slashes
+    self.domain = '' # This must be your domain name without a leading http:// or trailing slashes
     self.detail = '' # This is a quick, one line description of your Server List website
 
     # Optional Variables below
